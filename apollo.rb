@@ -37,12 +37,6 @@ class Apollo
             :url      => "http://127.0.0.1:9091/transmission/rpc" #ENV['TRANSMISSION_URL']
           )
 
-          torrents = transmission_api.all
-
-          torrents.each do |t|
-            p "TORRENT #{t}"
-          end
-
           t = transmission_api.create(m.to_s)
           p "TORRENT #{t}"
         end
