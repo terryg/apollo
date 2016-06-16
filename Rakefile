@@ -1,8 +1,8 @@
-require 'rubygems'
+require './init'
 require './apollo.rb'
 
 namespace :jobs do
-  desc 'Generate poetry.'
+  desc 'Get requestes from Twitter mentions timeline.'
   task :get_requests do
     apollo = Apollo.new
     apollo.run

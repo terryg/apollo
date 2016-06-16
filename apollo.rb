@@ -31,10 +31,14 @@ class Apollo
           p "MATCHED [#{m.to_s}]"
 
 
+          p "USERNAME #{ENV['TRANSMISSION_USERNAME']}"
+          p "PASSWORD #{ENV['TRANSMISSION_PASSWORD']}"
+          p "URL #{ENV['TRANSMISSION_URL']}"
+
           transmission_api = TransmissionApi::Client.new(
-            :username => "transmission", #ENV['TRANSMISSION_USER'],
-            :password => "changeme", #ENV['TRANSMISSION_PASSWORD'],
-            :url      => "http://127.0.0.1:9091/transmission/rpc" #ENV['TRANSMISSION_URL']
+            :username => ENV['TRANSMISSION_USERNAME'],
+            :password => ENV['TRANSMISSION_PASSWORD'],
+            :url      => ENV['TRANSMISSION_URL']
           )
 
           t = transmission_api.create(m.to_s)
