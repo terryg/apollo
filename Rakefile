@@ -1,8 +1,8 @@
 require './init'
-require './apollo.rb'
+require './apollo'
 
 namespace :jobs do
-  desc 'Get requestes from Twitter mentions timeline.'
+  desc 'Get requests from Twitter mentions timeline.'
   task :get_requests do
     apollo = Apollo.new
     apollo.run
