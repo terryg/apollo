@@ -110,4 +110,19 @@ class Apollo
     end
   end
 
+  def poll_transmission_daemon
+    transmission_api = TransmissionApi::Client.new(
+      :username => ENV['TRANSMISSION_USERNAME'],
+      :password => ENV['TRANSMISSION_PASSWORD'],
+      :url      => ENV['TRANSMISSION_URL']
+    )
+
+    Torrent.all(:deleted.not => true).each do |record|
+      t = transmission_api.find(record.transmission_id)
+      if 1 == t['percentDone']
+        puts "INFO: Torrent #{t['id']} is done."
+      end
+    end
+  end
+
 end    

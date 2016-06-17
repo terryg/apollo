@@ -20,6 +20,12 @@ namespace :jobs do
     apollo.add_torrents
   end
 
+  desc 'Check on status of torrents.'
+  task :check_torrents do
+    apollo = Apollo.new
+    apollo.poll_transmission_daemon
+  end
+
   desc 'Do all.'
   task :do_all do
     apollo = Apollo.new
