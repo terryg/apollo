@@ -1,3 +1,4 @@
+require './models/datafile'
 require './models/request'
 require './models/search_queue'
 require 'net/http'
@@ -119,8 +120,56 @@ class Apollo
 
     Torrent.all(:deleted.not => true).each do |record|
       t = transmission_api.find(record.transmission_id)
-      if 1 == t['percentDone']
+      puts "INFO: id #{record.transmission_id} #{t}"
+      if t && 1 == t['percentDone']
         puts "INFO: Torrent #{t['id']} is done."
+        length = t['totalSize']
+        puts "LENGTH [#{length}]"
+        curr = 0
+        index = 0
+        while curr < length do
+          track = File.join(ENV['TRANSMISSION_COMPLETED_DIR'],
+                            t['files'][index]['name'])
+          
+          puts "INFO: #{track}"
+
+          begin
+            fkey = Datafile.store_on_s3(open(track, "rb"),
+                                        t['files'][index]['name'])
+
+            puts "DEBUG: id #{t['id']}"
+            puts "DEBUG: torrent #{t['name']}"
+            puts "DEBUG: filename #{t['files'][index]['name']}"
+            puts "DEBUG: fkey #{fkey}"
+
+            d = Datafile.create(:torrent_id   => t['id'],
+                                :torrent_name => t['name'],
+                                :file_name    => t['files'][index]['name'],
+                                :s3_fkey      => fkey)
+
+            puts "DEBUG: done Datafile create"
+
+            if !d.save
+              d.errors.each do |err|
+                puts "ERROR Datafile save #{err}"
+              end
+            else
+              puts "ERROR Datafile #{d.id} saved"
+            end
+          rescue => e
+            puts "ERROR: #{e}"
+          end
+
+          curr = curr + t['files'][index]['length']
+          index = index + 1
+
+          puts "DEBUG: Next is #{index} #{curr}"
+        end
+
+        transmission_api.destroy(record.transmission_id)
+
+        torrent = Torrent.get(record.id)
+        torrent.update(:deleted => true)
       end
     end
   end

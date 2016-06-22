@@ -12,6 +12,7 @@ DataMapper::Logger.new(STDOUT, :debug)
 DataMapper.setup(:default, {:adapter => "redis"})
 
 require './models/request'
+require './models/datafile'
 
 DataMapper.finalize
 DataMapper.auto_upgrade!
