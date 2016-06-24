@@ -1,5 +1,6 @@
 require './models/search_queue'
 require './models/magnet_link'
+require './models/datafile'
 
 class Request
   include DataMapper::Resource
@@ -7,6 +8,7 @@ class Request
   property :id, Serial, :index => true
   property :tweet_id, Integer
   property :tweet_text, String, :length => 140
+  property :matched, Boolean, :default => false
   property :created_at, DateTime, :default => DateTime.now
   property :deleted, Boolean, :default => false
 
@@ -14,4 +16,10 @@ class Request
 
   has 1, :search_queue
   has n, :magnet_links
+  has n, :datafiles
+
+  def text
+    self.tweet_text.gsub('#request', '').gsub('@1ApolloBot', '').strip
+  end
+
 end

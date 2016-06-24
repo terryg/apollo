@@ -26,6 +26,12 @@ namespace :jobs do
     apollo.poll_transmission_daemon
   end
 
+  desc 'For unmatched requests, find a track.'
+  task :match_requests do
+    apollo = Apollo.new
+    apollo.match_requests
+  end
+
   desc 'Do all.'
   task :do_all do
     apollo = Apollo.new

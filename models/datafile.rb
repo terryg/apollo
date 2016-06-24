@@ -1,3 +1,4 @@
+require './models/request'
 require 'digest/md5'
 
 class Datafile
@@ -9,6 +10,7 @@ class Datafile
   property :file_name, Text
   property :s3_fkey, String
   property :md5sum, String
+  property :matched, Boolean, :default => false
   property :created_at, DateTime, :default => DateTime.now
   property :deleted, Boolean, :default => false
 
@@ -26,26 +28,15 @@ class Datafile
     ENV['S3_BUCKET_NAME']
   end
 
-  def self.store_on_s3(temp_file, filename)
+  def self.store_on_s3(track)
     puts "INFO: STORE ON S3"
     value = (0...16).map{(97+rand(26)).chr}.join
-    ext = File.extname(filename)
+    ext = File.extname(track.path)
     fkey = value  + ext
-    fname = '/tmp/' + fkey
 
-    puts "XXX #{fname}"
+    puts "S3 STORE begin"
 
-    begin
-      File.open(fname, "wb") do |f|
-        f.write(temp_file.read)
-      end
-    rescue => e
-      puts "ERROR: #{e}"
-    end
-
-    puts "WRITE IS DONE"
-
-    AWS::S3::S3Object.store(fkey, open(fname), self.s3_bucket)
+    AWS::S3::S3Object.store(fkey, open(track), self.s3_bucket)
 
     puts "S3 STORE IS DONE"
 

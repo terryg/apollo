@@ -1,4 +1,4 @@
-require './models/datafile'
+ require './models/datafile'
 require './models/request'
 require './models/search_queue'
 require 'net/http'
@@ -40,12 +40,10 @@ class Apollo
                     :deleted.not => true).each do |record|
       r = Request.get(record.request_id)
 
-      text = r.tweet_text.gsub('#request', '').gsub('@1ApolloBot', '').strip
-      
-      puts "REQUEST [#{text}]"
+      puts "REQUEST [#{r.text}]"
 
       m = Net::HTTP.start('kat.cr', :use_ssl => true) do |http|
-        resp = http.get("/usearch/#{URI::encode(text)}/")
+        resp = http.get("/usearch/#{URI::encode(r.text)}/")
         
         l = /^.* title="Torrent magnet link" .*$/.match(resp.body)
 
@@ -120,7 +118,7 @@ class Apollo
 
     Torrent.all(:deleted.not => true).each do |record|
       t = transmission_api.find(record.transmission_id)
-      puts "INFO: id #{record.transmission_id} #{t}"
+      puts "INFO: Torrent id #{record.transmission_id} #{t['percentDone'] unless t.nil?}"
       if t && 1 == t['percentDone']
         puts "INFO: Torrent #{t['id']} is done."
         length = t['totalSize']
@@ -134,8 +132,7 @@ class Apollo
           puts "INFO: #{track}"
 
           begin
-            fkey = Datafile.store_on_s3(open(track, "rb"),
-                                        t['files'][index]['name'])
+            fkey = Datafile.store_on_s3(open(track, "rb"))
 
             puts "DEBUG: id #{t['id']}"
             puts "DEBUG: torrent #{t['name']}"
@@ -170,6 +167,15 @@ class Apollo
 
         torrent = Torrent.get(record.id)
         torrent.update(:deleted => true)
+      end
+    end
+  end
+
+  def match_requests
+    Request.all(:matched.not => true).each do |request|
+      puts "DEBUG: #{request.text}"
+      Datafile.all(:matched.not => true).each do |datafile|
+        puts "DEBUG: #{datafile.name}"
       end
     end
   end
