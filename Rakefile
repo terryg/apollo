@@ -32,12 +32,24 @@ namespace :jobs do
     apollo.match_requests
   end
 
+  desc 'Poll Twitter and start Transmission.'
+  task :poll_and_start do
+    apollo = Apollo.new
+    apollo.poll_and_record_requests
+    apollo.search_for_magnet_links
+    apollo.add_torrents
+  end
+
   desc 'Do all.'
   task :do_all do
     apollo = Apollo.new
     apollo.poll_and_record_requests
     apollo.search_for_magnet_links
     apollo.add_torrents
+    apollo.poll_transmission_daemon
+    apollo.match_requests
   end
+
+
 end
   

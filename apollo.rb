@@ -3,6 +3,7 @@ require './models/request'
 require './models/search_queue'
 require 'net/http'
 require 'open-uri'
+require 'to_regexp'
 require 'transmission_api'
 require 'twitter'
 
@@ -17,7 +18,7 @@ class Apollo
       config.access_token_secret = ENV['ACCESS_TOKEN_SECRET']
     end
 
-    client.mentions_timeline(result_type: "recent").take(10).each do |tweet|
+    client.mentions_timeline(result_type: "recent").take(100).each do |tweet|
       if Request.first(:tweet_id => tweet.id).nil?
         puts "INFO: Tweet #{tweet.id} -- #{tweet.text}"
         r = Request.create(:tweet_id => tweet.id, 
@@ -174,8 +175,27 @@ class Apollo
   def match_requests
     Request.all(:matched.not => true).each do |request|
       puts "DEBUG: #{request.text}"
-      Datafile.all(:matched.not => true).each do |datafile|
-        puts "DEBUG: #{datafile.name}"
+
+      s = request.text.split(' ')[0]
+      r = "/#{s}/"
+#      puts "FIRST #{r.to_regexp.to_s}"
+
+      Datafile.all(:fields => [:torrent_name], 
+                   :matched.not => true).each do |datafile|
+        
+        if r.to_regexp.match(datafile.torrent_name)
+          s1 = request.text.split(' ')[1]
+          r1 = "/#{s1}/"
+ #         puts "SECOND #{r1.to_regexp.to_s}"
+
+          if r1.to_regexp.match(datafile.torrent_name)
+            s2 = request.text.split(' ')[2]
+            r2 = "/#{s2}/"
+ #           puts "THIRD #{r2.to_regexp.to_s}"
+  
+            puts "??? #{datafile.torrent_name}"
+          end
+        end
       end
     end
   end

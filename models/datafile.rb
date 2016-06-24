@@ -1,4 +1,3 @@
-require './models/request'
 require 'digest/md5'
 
 class Datafile
@@ -15,7 +14,7 @@ class Datafile
   property :deleted, Boolean, :default => false
 
   after :create do
-    fname = '/tmp/' + self.s3_fkey
+    fname = File.join(ENV['TRANSMISSION_COMPLETED_DIR'], self.file_name)
     self.md5sum = Datafile.calc_md5sum(fname)
     save_self(false)
   end
