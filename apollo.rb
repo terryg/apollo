@@ -135,14 +135,16 @@ class Apollo
           begin
             fkey = Datafile.store_on_s3(open(track, "rb"))
 
+            name = File.basename(t['files'][index]['name'])
+
             puts "DEBUG: id #{t['id']}"
             puts "DEBUG: torrent #{t['name']}"
-            puts "DEBUG: filename #{t['files'][index]['name']}"
+            puts "DEBUG: filename #{name}"
             puts "DEBUG: fkey #{fkey}"
 
             d = Datafile.create(:torrent_id   => t['id'],
                                 :torrent_name => t['name'],
-                                :file_name    => t['files'][index]['name'],
+                                :file_name    => name,
                                 :s3_fkey      => fkey)
 
             puts "DEBUG: done Datafile create"
@@ -174,26 +176,26 @@ class Apollo
 
   def match_requests
     Request.all(:matched.not => true).each do |request|
-      puts "DEBUG: #{request.text}"
-
       s = request.text.split(' ')[0]
       r = "/#{s}/"
-#      puts "FIRST #{r.to_regexp.to_s}"
 
-      Datafile.all(:fields => [:torrent_name], 
+      Datafile.all(:fields => [:file_name, :torrent_name], 
                    :matched.not => true).each do |datafile|
         
         if r.to_regexp.match(datafile.torrent_name)
           s1 = request.text.split(' ')[1]
           r1 = "/#{s1}/"
- #         puts "SECOND #{r1.to_regexp.to_s}"
 
           if r1.to_regexp.match(datafile.torrent_name)
             s2 = request.text.split(' ')[2]
             r2 = "/#{s2}/"
- #           puts "THIRD #{r2.to_regexp.to_s}"
   
-            puts "??? #{datafile.torrent_name}"
+            if r2.to_regexp.match(datafile.file_name)
+              if /(flac|mp3)/.match(datafile.file_name)
+                puts "DEBUG: #{request.text}"
+                puts "??? #{datafile.file_name}"
+              end
+            end
           end
         end
       end
