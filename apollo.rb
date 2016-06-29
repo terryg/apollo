@@ -175,11 +175,13 @@ class Apollo
   end
 
   def match_requests
-    Request.all(:matched.not => true).each do |request|
+    tracks = Array.new
+
+    Request.all(:fields => [:id, :tweet_text], :matched.not => true).each do |request|
       s = request.text.split(' ')[0]
       r = "/#{s}/"
 
-      Datafile.all(:fields => [:file_name, :torrent_name], 
+      Datafile.all(:fields => [:id, :file_name, :torrent_name], 
                    :matched.not => true).each do |datafile|
         
         if r.to_regexp.match(datafile.torrent_name)
@@ -192,13 +194,33 @@ class Apollo
   
             if r2.to_regexp.match(datafile.file_name)
               if /(flac|mp3)/.match(datafile.file_name)
-                puts "DEBUG: #{request.text}"
+                puts "DEBUG: #{request.id} #{request.text}"
+                puts "DEBUG: #{datafile.id}"
                 puts "??? #{datafile.file_name}"
+
+                track = Track.create(:request_id => request.id,
+                                     :datafile_id => datafile.id)
+                
+                if !track.save
+                  track.errors.each do |err|
+                    puts "ERR: Track save #{err}"
+                  end
+                end
+
+                tracks << track
+
+                break
               end
             end
           end
         end
       end
+    end
+
+    tracks.each do |track|
+      puts "DEBUG: #{track.id} #{track.request_id} #{track.datafile_id}"
+      track.request.update(:matched => true)
+      track.datafile.update(:matched => true)
     end
   end
 

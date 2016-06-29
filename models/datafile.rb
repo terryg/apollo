@@ -1,4 +1,5 @@
 require 'digest/md5'
+require './models/track'
 
 class Datafile
   include DataMapper::Resource
@@ -12,6 +13,8 @@ class Datafile
   property :matched, Boolean, :default => false
   property :created_at, DateTime, :default => DateTime.now
   property :deleted, Boolean, :default => false
+
+  has 1, :track
 
   after :create do
     fname = File.join(ENV['TRANSMISSION_COMPLETED_DIR'], self.file_name)

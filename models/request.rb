@@ -1,5 +1,6 @@
 require './models/search_queue'
 require './models/magnet_link'
+require './models/track'
 
 class Request
   include DataMapper::Resource
@@ -15,6 +16,7 @@ class Request
 
   has 1, :search_queue
   has n, :magnet_links
+  has 1, :track
 
   def text
     self.tweet_text.gsub('#request', '').gsub('@1ApolloBot', '').strip
