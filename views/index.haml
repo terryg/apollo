@@ -8,10 +8,10 @@
     .row-fluid
       .span6
         %ul
-        - @tracks.each do |track|
-          %li 
-            %a{:href => track.datafile.url}
-              = "#{track.id} #{track.datafile.file_name}"
+        - @datafiles.each do |datafile|
+          %li
+            %a{:href => datafile.url} 
+              = "#{datafile.id} #{datafile.file_name}"
       .span6
         = File.read(File.join('views', 'twitter.haml'))
 
