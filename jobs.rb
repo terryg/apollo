@@ -1,4 +1,4 @@
- require './models/datafile'
+require './models/datafile'
 require './models/request'
 require './models/search_queue'
 require 'net/http'
@@ -7,7 +7,7 @@ require 'to_regexp'
 require 'transmission_api'
 require 'twitter'
 
-class Apollo
+class Jobs
 
   def poll_and_record_requests
     puts "START at #{Time.now.strftime('%Y%m%d %T')}"
@@ -217,10 +217,19 @@ class Apollo
       end
     end
 
+    client = Twitter::REST::Client.new do |config|
+      config.consumer_key        = ENV['CONSUMER_KEY']
+      config.consumer_secret     = ENV['CONSUMER_SECRET']
+      config.access_token        = ENV['ACCESS_TOKEN']
+      config.access_token_secret = ENV['ACCESS_TOKEN_SECRET']
+    end
+
     tracks.each do |track|
       puts "DEBUG: #{track.id} #{track.request_id} #{track.datafile_id}"
       track.request.update(:matched => true)
       track.datafile.update(:matched => true)
+
+      client.retweet(track.request.tweet_id)
     end
   end
 

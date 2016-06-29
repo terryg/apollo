@@ -1,0 +1,21 @@
+#wrap
+  .container-fluid
+    .row-fluid
+      .span12
+        %h1
+          DJ APOLLO
+  .container
+    .row-fluid
+      .span6
+        %ul
+        - @tracks.each do |track|
+          %li 
+            %a{:href => track.datafile.url}
+              = "#{track.id} #{track.datafile.file_name}"
+      .span6
+        = File.read(File.join('views', 'twitter.haml'))
+
+#footer
+  <a href="https://github.com/terryg/apollo">github.com/terryg/apollo</a>
+
+= File.read(File.join('views', 'google_analytics.haml'))
