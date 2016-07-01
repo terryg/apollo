@@ -193,7 +193,7 @@ class Jobs
             r2 = "/#{s2}/"
   
             if r2.to_regexp.match(datafile.file_name)
-              if /(flac|mp3)/.match(datafile.file_name)
+              if /(mp3|mp4|ogg|webm|wav)$/.match(datafile.file_name)
                 puts "DEBUG: #{request.id} #{request.text}"
                 puts "DEBUG: #{datafile.id}"
                 puts "??? #{datafile.file_name}"

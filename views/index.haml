@@ -7,15 +7,19 @@
   .container
     .row-fluid
       .span6
-        %ul
-        - @datafiles.each do |datafile|
-          %li
-            %a{:href => datafile.url} 
-              = "#{datafile.id} #{datafile.file_name}"
+        = File.read(File.join('views', 'coolaudio.haml'))
+     
+        %textarea{:class => "audio_list", :style => "display:none"} 
+          = @datafile.url
+ 
       .span6
         = File.read(File.join('views', 'twitter.haml'))
 
 #footer
   <a href="https://github.com/terryg/apollo">github.com/terryg/apollo</a>
 
+%script{:id => "audio_script", :type => "text/javascript", :src => "js/coolaudio.js"}
+
+
 = File.read(File.join('views', 'google_analytics.haml'))
+
