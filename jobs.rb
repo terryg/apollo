@@ -9,6 +9,7 @@ require 'twitter'
 
 class Jobs
 
+  Dir.mkdir(File.join(File.dirname(__FILE__), "log")) unless Dir.exists?(File.join(File.dirname(__FILE__), "log"))
   @@log_file = File.open(File.join(File.dirname(__FILE__), "log/#{ENV['RACK_ENV']}.log"), 'a')
   @@log_file.sync = true
   def log(msg)
