@@ -10,13 +10,7 @@ class App < Sinatra::Base
     
     all = Datafile.all(:matched.not => false)
     size = all.length
-
-    puts "DEBUG: #{size} files."
-
     id = (rand * 100).to_i % size
-
-    puts "DEBUG: Datafile #{id}"
-
     @datafile = Datafile.get(id)
 
     haml :index

@@ -20,6 +20,9 @@
 
 %script{:id => "audio_script", :type => "text/javascript", :src => "js/coolaudio.js"}
 
+%script{:type => "text/javascript"}
+  window.onload = play_pause(0);
+}
 
 = File.read(File.join('views', 'google_analytics.haml'))
 
