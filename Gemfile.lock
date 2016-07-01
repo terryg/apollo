@@ -95,7 +95,7 @@ GEM
     rack-protection (1.5.3)
       rack
     rake (11.2.2)
-    redis (3.3.0)
+    redis (3.2.1)
     sass (3.4.22)
     simple_oauth (0.3.1)
     sinatra (1.4.7)
@@ -140,8 +140,9 @@ DEPENDENCIES
   dm-redis-adapter
   foreman
   haml
+  hiredis
   rake
-  redis
+  redis (= 3.2.1)
   sass
   sinatra
   thin
