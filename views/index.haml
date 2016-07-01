@@ -6,13 +6,23 @@
           DJ APOLLO
   .container
     .row-fluid
-      .span6
+      .span12
+        "Library has #{@size} tracks." 
+
+    .row-fluid
+      .span7
         = File.read(File.join('views', 'coolaudio.haml'))
      
+        %blockquote
+          %p{:lang => "en", "xml:lang" => "en"}
+            = @tweet.text
+            %a{:href => "https://twitter.com/Interior/status/#{@tweet.id}"}
+
         %textarea{:class => "audio_list", :style => "display:none"} 
           = "#{@datafile.url}##<strong>#{@datafile.file_name}</strong>"
  
-      .span6
+      .span2
+      .span3
         = File.read(File.join('views', 'twitter.haml'))
 
 #footer
