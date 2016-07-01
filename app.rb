@@ -7,9 +7,18 @@ class App < Sinatra::Base
   set :logging, Logger::DEBUG
 
   get '/' do
-    @datafile = Datafile.first(:fields => [:id, :file_name, :s3_fkey],
-                               :matched.not => false,
-                               :order => [:created_at.desc])
+    
+    all = Datafile.all(:matched.not => false)
+    size = all.length
+
+    puts "DEBUG: #{size} files."
+
+    id = (rand * 100).to_i % size
+
+    puts "DEBUG: Datafile #{id}"
+
+    @datafile = Datafile.get(id)
+
     haml :index
   end
 

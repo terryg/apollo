@@ -10,7 +10,7 @@
         = File.read(File.join('views', 'coolaudio.haml'))
      
         %textarea{:class => "audio_list", :style => "display:none"} 
-          = @datafile.url
+          = "#{@datafile.url}##<strong>#{@datafile.file_name}</strong>"
  
       .span6
         = File.read(File.join('views', 'twitter.haml'))
