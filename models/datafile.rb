@@ -7,6 +7,7 @@ class Datafile
   property :id, Serial, :index => true
   property :torrent_id, Integer
   property :torrent_name, Text
+  property :temp_path, Text
   property :file_name, Text
   property :s3_fkey, String
   property :md5sum, String
@@ -17,8 +18,7 @@ class Datafile
   has 1, :track
 
   after :create do
-    fname = File.join(ENV['TRANSMISSION_COMPLETED_DIR'], self.file_name)
-    self.md5sum = Datafile.calc_md5sum(fname)
+    self.md5sum = Datafile.calc_md5sum(self.temp_path)
     save_self(false)
   end
 

@@ -136,24 +136,33 @@ class Jobs
         curr = 0
         index = 0
         while curr < length do
-          track = File.join(ENV['TRANSMISSION_COMPLETED_DIR'],
-                            t['files'][index]['name'])
+          name = t['files'][index]['name']
+          s = URI.encode(name)
+          log "DEBUG: https://tgl24-80.terminal.com/#{s}"
+          uri = URI.parse("https://tgl24-80.terminal.com/#{s}")
+          tempfile = nil
+          Net::HTTP.start(uri.host) do |http|
+            resp = http.get(uri.path)
+            tempfile = Tempfile.new(Time.now.to_i.to_s)
+            track = File.open(tempfile.path, "wb") do |f|
+              f.write resp.body
+            end
+            log "INFO: #{track}"
+          end
           
-          log "INFO: #{track}"
-
           begin
-            fkey = Datafile.store_on_s3(open(track, "rb"))
-
-            name = File.basename(t['files'][index]['name'])
+            fkey = Datafile.store_on_s3(tempfile)
 
             log "DEBUG: id #{t['id']}"
             log "DEBUG: torrent #{t['name']}"
-            log "DEBUG: filename #{name}"
+            log "DEBUG: temp path #{tempfile.path}"
+            log "DEBUG: filename #{File.basename(name)}"
             log "DEBUG: fkey #{fkey}"
 
             d = Datafile.create(:torrent_id   => t['id'],
                                 :torrent_name => t['name'],
-                                :file_name    => name,
+                                :temp_path    => tempfile.path,
+                                :file_name    => File.basename(name),
                                 :s3_fkey      => fkey)
 
             log "DEBUG: done Datafile create"
@@ -238,7 +247,11 @@ class Jobs
       track.request.update(:matched => true)
       track.datafile.update(:matched => true)
 
-      client.retweet(track.request.tweet_id)
+      begin
+        client.retweet(track.request.tweet_id)
+      rescue => e
+        log "ERROR: Retweet #{e}"
+      end
     end
   end
 
