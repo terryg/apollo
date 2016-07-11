@@ -139,7 +139,7 @@ class Jobs
           name = t['files'][index]['name']
           s = URI.encode(name)
           log "DEBUG: https://tgl24-80.terminal.com/#{s}"
-          uri = URI.parse("https://tgl24-80.terminal.com/#{s}")
+          uri = URI.parse("https://tgl24-80.terminal.com/#{s.gsub("[","%5B").gsub("]","%5D")}")
           tempfile = nil
           Net::HTTP.start(uri.host) do |http|
             resp = http.get(uri.path)
