@@ -25,7 +25,7 @@ class App < Sinatra::Base
       @tweet = @@client.status(track.request.tweet_id)
 
       puts "DEBUG: #{@tweet}"
-      puts "DEBUG: #{@tweet['id']}"
+      puts "DEBUG: #{@tweet.id}"
     end
 
     haml :index
