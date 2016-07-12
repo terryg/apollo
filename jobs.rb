@@ -136,46 +136,48 @@ class Jobs
         curr = 0
         index = 0
         while curr < length do
-          name = t['files'][index]['name']
-          s = URI.encode(name)
-          log "DEBUG: https://tgl24-80.terminal.com/#{s}"
-          uri = URI.parse("https://tgl24-80.terminal.com/#{s.gsub("[","%5B").gsub("]","%5D")}")
-          tempfile = nil
-          Net::HTTP.start(uri.host) do |http|
-            resp = http.get(uri.path)
-            tempfile = Tempfile.new(Time.now.to_i.to_s)
-            track = File.open(tempfile.path, "wb") do |f|
-              f.write resp.body
-            end
-            log "INFO: #{track}"
-          end
-          
-          begin
-            fkey = Datafile.store_on_s3(tempfile)
-
-            log "DEBUG: id #{t['id']}"
-            log "DEBUG: torrent #{t['name']}"
-            log "DEBUG: temp path #{tempfile.path}"
-            log "DEBUG: filename #{File.basename(name)}"
-            log "DEBUG: fkey #{fkey}"
-
-            d = Datafile.create(:torrent_id   => t['id'],
-                                :torrent_name => t['name'],
-                                :temp_path    => tempfile.path,
-                                :file_name    => File.basename(name),
-                                :s3_fkey      => fkey)
-
-            log "DEBUG: done Datafile create"
-
-            if !d.save
-              d.errors.each do |err|
-                log "ERROR Datafile save #{err}"
+          if (t['files'][index]['length']).to_i < 100000000
+            name = t['files'][index]['name']
+            s = URI.encode(name)
+            log "DEBUG: https://tgl24-80.terminal.com/#{s}"
+            uri = URI.parse("https://tgl24-80.terminal.com/#{s.gsub("[","%5B").gsub("]","%5D")}")
+            tempfile = nil
+            Net::HTTP.start(uri.host) do |http|
+              resp = http.get(uri.path)
+              tempfile = Tempfile.new(Time.now.to_i.to_s)
+              track = File.open(tempfile.path, "wb") do |f|
+                f.write resp.body
               end
-            else
-              log "ERROR Datafile #{d.id} saved"
+              log "INFO: #{track}"
             end
-          rescue => e
-            log "ERROR: #{e}"
+          
+            begin
+              fkey = Datafile.store_on_s3(tempfile)
+
+              log "DEBUG: id #{t['id']}"
+              log "DEBUG: torrent #{t['name']}"
+              log "DEBUG: temp path #{tempfile.path}"
+              log "DEBUG: filename #{File.basename(name)}"
+              log "DEBUG: fkey #{fkey}"
+              
+              d = Datafile.create(:torrent_id   => t['id'],
+                                  :torrent_name => t['name'],
+                                  :temp_path    => tempfile.path,
+                                  :file_name    => File.basename(name),
+                                  :s3_fkey      => fkey)
+
+              log "DEBUG: done Datafile create"
+
+              if !d.save
+                d.errors.each do |err|
+                  log "ERROR Datafile save #{err}"
+                end
+              else
+                log "ERROR Datafile #{d.id} saved"
+              end
+            rescue => e
+              log "ERROR: #{e}"
+            end
           end
 
           curr = curr + t['files'][index]['length']
