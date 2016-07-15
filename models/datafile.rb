@@ -79,8 +79,6 @@ class Datafile
                 log "ERR: Track save #{err}"
               end
             end
-          
-            tracks << track          
           end
         end
       end

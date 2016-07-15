@@ -32,7 +32,6 @@ class Jobs
         log "INFO: Tweet #{tweet.id} -- #{tweet.text}"
         r = Request.create(:tweet_id => tweet.id, 
                            :tweet_text => tweet.text)
-        r.search_queue = SearchQueue.create
 
         if !r.save
           r.errors.each do |err|
@@ -40,6 +39,35 @@ class Jobs
           end
         else
           log "INFO: Request save #{r.id}"
+
+          track = nil
+
+          Datafile.all(:fields => [:id, :file_name, :torrent_name], 
+                       :matched.not => true).each do |datafile|
+            track = datafile.match(r) 
+          end
+
+          if track.nil?
+            r.search_queue = SearchQueue.create
+            r.save
+          else
+            log "DEBUG: #{track.id} #{track.request_id} #{track.datafile_id}"
+            track.request.update(:matched => true)
+            track.datafile.update(:matched => true)
+            
+            begin
+              client = Twitter::REST::Client.new do |config|
+                config.consumer_key        = ENV['CONSUMER_KEY']
+                config.consumer_secret     = ENV['CONSUMER_SECRET']
+                config.access_token        = ENV['ACCESS_TOKEN']
+                config.access_token_secret = ENV['ACCESS_TOKEN_SECRET']
+              end
+
+              client.retweet(track.request.tweet_id)
+            rescue => e
+              log "ERROR: Retweet #{e}"
+            end
+          end
         end
       end
     end
@@ -203,7 +231,7 @@ class Jobs
 
       Datafile.all(:fields => [:id, :file_name, :torrent_name], 
                    :matched.not => true).each do |datafile|
-        track =  datafile.match(request) 
+        track = datafile.match(request) 
         tracks << track unless track.nil?
       end
     end
