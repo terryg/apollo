@@ -51,6 +51,44 @@ class Datafile
     puts "INFO: delete_s3 done."
   end
 
+  def match(request)
+    s = request.text.split(' ')[0]
+    r = "/#{s}/"
+
+    track = nil
+
+    if r.to_regexp.match(self.torrent_name)
+      s1 = request.text.split(' ')[1]
+      r1 = "/#{s1}/"
+  
+      if r1.to_regexp.match(self.file_name)
+        s2 = request.text.split(' ')[2]
+        r2 = "/#{s2}/"
+  
+        if r2.to_regexp.match(self.file_name)
+          if /(mp3|mp4|ogg|webm|wav)$/.match(self.file_name)
+            log "DEBUG: #{request.id} #{request.text}"
+            log "DEBUG: #{self.id}"
+            log "??? #{self.file_name}"
+          
+            track = Track.create(:request_id => request.id,
+                                 :datafile_id => self.id)
+                
+            if !track.save
+              track.errors.each do |err|
+                log "ERR: Track save #{err}"
+              end
+            end
+          
+            tracks << track          
+          end
+        end
+      end
+    end
+    
+    track
+  end
+
   def url
     "https://s3.amazonaws.com/#{self.class.s3_bucket}/#{self.s3_fkey}"
   end

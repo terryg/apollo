@@ -203,37 +203,8 @@ class Jobs
 
       Datafile.all(:fields => [:id, :file_name, :torrent_name], 
                    :matched.not => true).each do |datafile|
-        
-        if r.to_regexp.match(datafile.torrent_name)
-          s1 = request.text.split(' ')[1]
-          r1 = "/#{s1}/"
-
-          if r1.to_regexp.match(datafile.torrent_name)
-            s2 = request.text.split(' ')[2]
-            r2 = "/#{s2}/"
-  
-            if r2.to_regexp.match(datafile.file_name)
-              if /(mp3|mp4|ogg|webm|wav)$/.match(datafile.file_name)
-                log "DEBUG: #{request.id} #{request.text}"
-                log "DEBUG: #{datafile.id}"
-                log "??? #{datafile.file_name}"
-
-                track = Track.create(:request_id => request.id,
-                                     :datafile_id => datafile.id)
-                
-                if !track.save
-                  track.errors.each do |err|
-                    log "ERR: Track save #{err}"
-                  end
-                end
-
-                tracks << track
-
-                break
-              end
-            end
-          end
-        end
+        track =  datafile.match(request) 
+        tracks << track unless track.nil?
       end
     end
 
