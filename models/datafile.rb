@@ -67,16 +67,16 @@ class Datafile
   
         if r2.to_regexp.match(self.file_name)
           if /(mp3|mp4|ogg|webm|wav)$/.match(self.file_name)
-            log "DEBUG: #{request.id} #{request.text}"
-            log "DEBUG: #{self.id}"
-            log "??? #{self.file_name}"
+            puts "DEBUG: #{request.id} #{request.text}"
+            puts "DEBUG: #{self.id}"
+            puts "??? #{self.file_name}"
           
             track = Track.create(:request_id => request.id,
                                  :datafile_id => self.id)
                 
             if !track.save
               track.errors.each do |err|
-                log "ERR: Track save #{err}"
+                puts "ERR: Track save #{err}"
               end
             end
           end
