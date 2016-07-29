@@ -74,35 +74,50 @@ class Jobs
   end
   
   def search_for_magnet_links
-    SearchQueue.all(:fields => [:id, :request_id],
+    SearchQueue.all(:fields => [:id, :count, :request_id],
                     :deleted.not => true).each do |record|
-      r = Request.get(record.request_id)
-
-      log "REQUEST [#{r.text}]"
-
-      m = Net::HTTP.start('kat.cr', :use_ssl => true) do |http|
-        resp = http.get("/usearch/#{URI::encode(r.text)}/")
+      if record.count < (ENV['MAX_SEARCHES']).to_i
+        r = Request.get(record.request_id)
         
-        l = /^.* title="Torrent magnet link" .*$/.match(resp.body)
+        log "REQUEST [#{r.text}]"
 
-        /magnet:\?[^"]*/.match(l.to_s)
-      end
+        m = Net::HTTP.start('kickasstorrents.to', :use_ssl => true) do |http|
+          resp = http.get("/usearch/#{URI::encode(r.text)}/")
+        
+          l = /^.* title="Torrent magnet link" .*$/.match(resp.body)
 
-      log "MAGNET #{m}"
-
-      ml = MagnetLink.create(:request => r, :link => m)
-      ml.request = r
-      ml.transmission_queue = TransmissionQueue.new
-      
-      if !ml.save
-        ml.errors.each do |err|
-          log "ERROR: MagnetLink save #{err}"
+          /magnet:\?[^"]*/.match(l.to_s)
         end
-      else
-        log "INFO: MagnetLink save #{ml.id}"
-      end
-    end
 
+        log "MAGNET #{m}"
+
+        unless m.nil?
+          ml = MagnetLink.create(:request => r, :link => m)
+          ml.request = r
+          ml.transmission_queue = TransmissionQueue.new
+      
+          if !ml.save
+            ml.errors.each do |err|
+              log "ERROR: MagnetLink save #{err}"
+            end
+          else
+            log "INFO: MagnetLink save #{ml.id}"
+          end
+        else
+ 
+          r = SearchQueue.get(record.id)
+          r.update(:count => (record.count + 1))
+          log "RECORD COUNT #{r.count}"
+        end
+        
+      else # if !(record.count < MAX_SEARCHES)
+        log "RECORD MARKED DELETED #{record.id}"
+        s = SearchQueue.get(record.id)
+        s.update(:deleted => true)
+      end
+
+    end # SearchQueue.all
+  
     MagnetLink.all(:deleted.not => true).each do |record|
       request = Request.get(record.request_id)
       search = request.search_queue
