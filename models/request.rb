@@ -11,6 +11,7 @@ class Request
   property :matched, Boolean, :default => false
   property :created_at, DateTime, :default => DateTime.now
   property :deleted, Boolean, :default => false
+  property :screen_name, String, :length => 20
 
   validates_presence_of :tweet_id, :tweet_text, :created_at
 

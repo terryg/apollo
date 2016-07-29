@@ -28,10 +28,12 @@ class Jobs
     end
 
     client.mentions_timeline(result_type: "recent").take(100).each do |tweet|
-      if Request.first(:tweet_id => tweet.id).nil?
+      if Request.first(:tweet_id => tweet.id).nil? and
+          tweet.user.screen_name != "1ApolloBot"
         log "INFO: Tweet #{tweet.id} -- #{tweet.text}"
         r = Request.create(:tweet_id => tweet.id, 
-                           :tweet_text => tweet.text)
+                           :tweet_text => tweet.text,
+                           :screen_name => tweet.user.screen_name)
 
         if !r.save
           r.errors.each do |err|
@@ -114,8 +116,21 @@ class Jobs
         log "RECORD MARKED DELETED #{record.id}"
         s = SearchQueue.get(record.id)
         s.update(:deleted => true)
-      end
 
+        begin
+          client = Twitter::REST::Client.new do |config|
+            config.consumer_key        = ENV['CONSUMER_KEY']
+            config.consumer_secret     = ENV['CONSUMER_SECRET']
+            config.access_token        = ENV['ACCESS_TOKEN']
+            config.access_token_secret = ENV['ACCESS_TOKEN_SECRET']
+          end
+
+          client.update("Sorry @#{record.request.screen_name}, no matches for [#{record.request.text}]")
+        rescue => e
+          log "ERROR: Tweet #{e}"
+        end
+
+      end
     end # SearchQueue.all
   
     MagnetLink.all(:deleted.not => true).each do |record|
