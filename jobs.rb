@@ -83,11 +83,11 @@ class Jobs
         
         log "REQUEST [#{r.text}]"
 
-        m = Net::HTTP.start('kickasstorrents.to', :use_ssl => true) do |http|
-          resp = http.get("/usearch/#{URI::encode(r.text)}/")
-        
-          l = /^.* title="Torrent magnet link" .*$/.match(resp.body)
+        m = Net::HTTP.start('thepiratebay.cr', :use_ssl => true) do |http|
+          resp = http.get("/search/#{URI::encode(r.text)}/")
 
+          l = /^.*alt="Magnet link".*$/.match(resp.body)
+          
           /magnet:\?[^"]*/.match(l.to_s)
         end
 
@@ -197,8 +197,8 @@ class Jobs
           if (t['files'][index]['length']).to_i < 100000000
             name = t['files'][index]['name']
             s = URI.encode(name)
-            log "DEBUG: https://tgl24-80.terminal.com/#{s}"
-            uri = URI.parse("https://tgl24-80.terminal.com/#{s.gsub("[","%5B").gsub("]","%5D")}")
+            log "DEBUG: http://ec2-54-166-10-103.compute-1.amazonaws.com/transmission/#{s}"
+            uri = URI.parse("http://ec2-54-166-10-103.compute-1.amazonaws.com/transmission/#{s.gsub("[","%5B").gsub("]","%5D")}")
             tempfile = nil
             Net::HTTP.start(uri.host) do |http|
               resp = http.get(uri.path)
