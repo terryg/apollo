@@ -55,16 +55,22 @@ class Datafile
     s = request.text.split(' ')[0]
     r = "/#{s}/"
 
+    puts "DEBUG: #{r} #{self.torrent_name}"
+    
     track = nil
 
     if r.to_regexp.match(self.torrent_name)
       s1 = request.text.split(' ')[1]
       r1 = "/#{s1}/"
-  
+
+      puts "DEBUG: #{r1} #{self.file_name}"
+      
       if r1.to_regexp.match(self.file_name)
         s2 = request.text.split(' ')[2]
         r2 = "/#{s2}/"
-  
+
+        puts "DEBUG: #{r2} #{self.file_name}"
+        
         if r2.to_regexp.match(self.file_name)
           if /(mp3|mp4|ogg|webm|wav)$/.match(self.file_name)
             puts "DEBUG: #{request.id} #{request.text}"
