@@ -256,9 +256,6 @@ class Jobs
     tracks = Array.new
 
     Request.all(:fields => [:id, :tweet_text], :matched.not => true).each do |request|
-      s = request.text.split(' ')[0]
-      r = "/#{s}/"
-
       Datafile.all(:fields => [:id, :file_name, :torrent_name], 
                    :matched.not => true).each do |datafile|
         track = datafile.match(request) 
