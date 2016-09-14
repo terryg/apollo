@@ -197,8 +197,8 @@ class Jobs
           if (t['files'][index]['length']).to_i < 100000000
             name = t['files'][index]['name']
             s = URI.encode(name)
-            log "DEBUG: http://ec2-54-166-10-103.compute-1.amazonaws.com/transmission/#{s}"
-            uri = URI.parse("http://ec2-54-166-10-103.compute-1.amazonaws.com/transmission/#{s.gsub("[","%5B").gsub("]","%5D")}")
+            log "DEBUG: http://ec2-54-166-10-103.compute-1.amazonaws.com:7722/#{s}"
+            uri = URI.parse("http://ec2-54-166-10-103.compute-1.amazonaws.com:7722/#{s.gsub("[","%5B").gsub("]","%5D")}")
             tempfile = nil
             Net::HTTP.start(uri.host) do |http|
               resp = http.get(uri.path)
