@@ -200,7 +200,7 @@ class Jobs
             log "DEBUG: http://ec2-54-166-10-103.compute-1.amazonaws.com:7722/#{s}"
             uri = URI.parse("http://ec2-54-166-10-103.compute-1.amazonaws.com:7722/#{s.gsub("[","%5B").gsub("]","%5D")}")
             tempfile = nil
-            Net::HTTP.start(uri.host) do |http|
+            Net::HTTP.start(uri.host, uri.port) do |http|
               resp = http.get(uri.path)
               tempfile = Tempfile.new(Time.now.to_i.to_s)
               track = File.open(tempfile.path, "wb") do |f|
