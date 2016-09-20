@@ -271,14 +271,23 @@ class Jobs
     end
 
     tracks.each do |track|
-      log "DEBUG: #{track.id} #{track.request_id} #{track.datafile_id}"
-      track.request.update(:matched => true)
-      track.datafile.update(:matched => true)
-
+      log "DEBUG: TRACK #{track.id} REQUEST #{track.request_id} DATAFILE #{track.datafile_id}"
       begin
-        client.retweet(track.request.tweet_id)
+        tweet = client.status(track.request.tweet_id, :trim_user => true)
+        
+        puts "TWEET #{tweet.url}"
+
+        retweets = client.retweeted_by_me(:max_id => tweet.id)
+
+        if retweets.size == 0
+          puts "RETWEETED TWEET #{tweet.retweeted_tweet?}"
+          client.retweet(tweet.id)
+          track.request.update(:matched => true)
+          track.datafile.update(:matched => true)
+        end
+        
       rescue => e
-        log "ERROR: Retweet #{e}"
+        log "RETWEET ERROR: #{e}"
       end
     end
   end
