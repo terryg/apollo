@@ -9,7 +9,7 @@ class App < Sinatra::Base
   set :logging, Logger::DEBUG
 
   get '/' do  
-    if (@size = Track.all.length) > 0
+    if (@size = Track.all(:deleted => false).length) > 0
       id = ((rand * 100).to_i % @size) + 1
       puts "DEBUG: Get Track #{id}"
       track = Track.get(id)
