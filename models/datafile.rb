@@ -52,50 +52,43 @@ class Datafile
   end
 
   def match(request)
-    s = request.text.split(' ')[0]
-    r = "/#{s}/"
-
-    puts "DEBUG: #{r} #{self.torrent_name}"
+    if match_ratio(request) > ENV['MATCH_PERCENTAGE'].to_f
+      track = Track.create(:request_id => request.id,
+                           :datafile_id => self.id)
     
-    track = nil
-
-    if r.to_regexp.match(self.torrent_name)
-      s1 = request.text.split(' ')[1]
-      r1 = "/#{s1}/"
-
-      puts "DEBUG: #{r1} #{self.file_name}"
-      
-      if r1.to_regexp.match(self.file_name)
-        s2 = request.text.split(' ')[2]
-        r2 = "/#{s2}/"
-
-        puts "DEBUG: #{r2} #{self.file_name}"
-        
-        if r2.to_regexp.match(self.file_name)
-          if /(mp3|mp4|ogg|webm|wav)$/.match(self.file_name)
-            puts "DEBUG: #{request.id} #{request.text}"
-            puts "DEBUG: #{self.id}"
-            puts "??? #{self.file_name}"
-          
-            track = Track.create(:request_id => request.id,
-                                 :datafile_id => self.id)
-                
-            if !track.save
-              track.errors.each do |err|
-                puts "ERR: Track save #{err}"
-              end
-            end
-          end
+      if !track.save
+        track.errors.each do |err|
+          puts "ERR: Track save #{err}"
         end
       end
+
+      return track
     end
+  end
+
+  def match_ratio(request)
+    cleaned = request.text.gsub('-', ' ')
+    tokens = cleaned.split(' ')
     
-    track
+    search_string = "#{self.torrent_name} #{self.file_name}"
+
+    puts "SEARCH ON #{search_string}"
+    
+    count = 0
+    
+    tokens.each do |token|
+      if /#{token}/.match(search_string)
+        count = count + 1
+      end
+    end
+
+    puts "COUNT/SIZE #{count}/#{tokens.size}"
+
+    return (count.to_f/tokens.size.to_f)
   end
 
   def url
     "https://s3.amazonaws.com/#{self.class.s3_bucket}/#{self.s3_fkey}"
   end
-
 
 end

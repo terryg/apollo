@@ -1,5 +1,12 @@
 require './init'
 require './jobs'
+require 'rake/testtask'
+
+Rake::TestTask.new do |t|
+  t.libs << 'models'
+  t.test_files = FileList['tests/*_test.rb']
+  t.verbose = true
+end
 
 namespace :jobs do
   desc 'Get requests from Twitter mentions timeline.'
