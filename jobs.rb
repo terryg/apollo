@@ -258,8 +258,10 @@ class Jobs
     Request.all(:fields => [:id, :tweet_text], :matched.not => true).each do |request|
       Datafile.all(:fields => [:id, :file_name, :torrent_name], 
                    :matched.not => true).each do |datafile|
-        track = datafile.match(request) 
-        tracks << track unless track.nil?
+        if datafile.match(request) 
+          d = Datafile.get(datafile.id)
+          d.update(:matched => true)
+        end
       end
     end
 

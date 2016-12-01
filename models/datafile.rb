@@ -62,7 +62,7 @@ class Datafile
         end
       end
 
-      return track
+      return true
     end
   end
 
@@ -73,6 +73,7 @@ class Datafile
     search_string = "#{self.torrent_name} #{self.file_name}"
 
     puts "SEARCH ON #{search_string}"
+    puts "TOKEN [#{tokens}]"
     
     count = 0
     
