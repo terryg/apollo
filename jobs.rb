@@ -270,7 +270,7 @@ class Jobs
           if t.save
             tracks << t
           else
-            log "WARN: Failed to save Track""
+            log "WARN: Failed to save Track"
           end
         end
       end
