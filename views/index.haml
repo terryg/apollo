@@ -13,16 +13,14 @@
       .span7
         = File.read(File.join('views', 'coolaudio.haml'))
      
-        - if @tweet && @datafiles
+        - if @tweet && @datafile
           %blockquote
             %p{:lang => "en", "xml:lang" => "en"}
               = @tweet.text
               %a{:href => "https://twitter.com/Interior/status/#{@tweet.id}"}
 
           %textarea{:class => "audio_list", :style => "display:none"}
-            = "&#10;&#13;"    
-            - @datafiles.each do |datafile|
-              = "#{datafile.url}##<strong>#{datafile.file_name}</strong>&#10;&#13;"
+            = "#{@datafile.url}##<strong>#{@datafile.file_name}</strong>"
  
       .span2
       .span3
