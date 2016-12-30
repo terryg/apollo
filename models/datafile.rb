@@ -64,7 +64,7 @@ class Datafile
     tokens = cleaned.split(' ')
     
     search_string = "#{self.torrent_name} #{self.file_name}"
-    search_string.gsub("&", "&amp;")
+    search_string.gsub!("&", "&amp;")
     
     puts "SEARCH ON #{search_string}"
     puts "TOKEN [#{tokens}]"
