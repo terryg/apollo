@@ -45,7 +45,7 @@ class Datafile
   end
 
   def match(request)
-    if match_ratio(request) > ENV['MATCH_PERCENTAGE'].to_f
+    if (match_ratio(request) - ENV['MATCH_PERCENTAGE'].to_f) >= 0.0
       track = Track.create(:request_id => request.id,
                            :datafile_id => self.id)
     
@@ -64,7 +64,8 @@ class Datafile
     tokens = cleaned.split(' ')
     
     search_string = "#{self.torrent_name} #{self.file_name}"
-
+    search_string.gsub("&", "&amp;")
+    
     puts "SEARCH ON #{search_string}"
     puts "TOKEN [#{tokens}]"
     
