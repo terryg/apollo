@@ -31,17 +31,10 @@ class Datafile
   end
 
   def self.store_on_s3(track)
-    puts "INFO: STORE ON S3"
     value = (0...16).map{(97+rand(26)).chr}.join
     ext = File.extname(track.path)
     fkey = value  + ext
-
-    puts "S3 STORE begin"
-
     AWS::S3::S3Object.store(fkey, open(track), self.s3_bucket)
-
-    puts "S3 STORE IS DONE"
-
     return fkey
   end
 
@@ -83,7 +76,7 @@ class Datafile
       end
     end
 
-    puts "COUNT/SIZE #{count}/#{tokens.size}"
+    puts "COUNT/SIZE #{count}/#{tokens.size} [#{(count.to_f/tokens.size.to_f)}]"
 
     return (count.to_f/tokens.size.to_f)
   end

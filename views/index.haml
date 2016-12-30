@@ -4,7 +4,7 @@
       .span12
         %h1
           DJ APOLLO
-  .container
+  .container-fluid
     .row-fluid
       .span12
         "Library has #{@size} tracks." 
@@ -13,14 +13,16 @@
       .span7
         = File.read(File.join('views', 'coolaudio.haml'))
      
-        - if @tweet && @datafile
+        - if @tweet && @datafiles
           %blockquote
             %p{:lang => "en", "xml:lang" => "en"}
               = @tweet.text
               %a{:href => "https://twitter.com/Interior/status/#{@tweet.id}"}
 
-          %textarea{:class => "audio_list", :style => "display:none"} 
-            = "#{@datafile.url}##<strong>#{@datafile.file_name}</strong>"
+          %textarea{:class => "audio_list", :style => "display:none"}
+            = "&#10;&#13;"    
+            - @datafiles.each do |datafile|
+              = "#{datafile.url}##<strong>#{datafile.file_name}</strong>&#10;&#13;"
  
       .span2
       .span3
@@ -33,7 +35,6 @@
 
 %script{:type => "text/javascript"}
   window.onload = play_pause(0);
-}
 
 = File.read(File.join('views', 'google_analytics.haml'))
 

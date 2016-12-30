@@ -258,7 +258,7 @@ class Jobs
     Request.all(:fields => [:id, :tweet_text], :matched.not => true).each do |request|
       Datafile.all(:fields => [:id, :file_name, :torrent_name], 
                    :matched.not => true).each do |datafile|
-        if datafile.match(request) 
+        if datafile.match(request) > ENV['MATCH_PERCENTAGE'].to_f 
           d = Datafile.get(datafile.id)
           d.update(:matched => true)
         end
