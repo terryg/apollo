@@ -10,13 +10,14 @@ class App < Sinatra::Base
 
   get '/' do  
     if (@size = Track.all(:deleted => false).length) > 0
+      count = 0
       track = nil
       while track.nil?       
         id = ((rand * 100).to_i % @size) + 1
         puts "DEBUG: Get Track #{id}"
         track = Track.get(id)
         puts "DEBUG: #{track.created_at}"
-        if track.created_at > (Date.today - 30)
+        if track.created_at > (Date.today - 15)
           @@client ||= Twitter::REST::Client.new do |config|
             config.consumer_key        = ENV['CONSUMER_KEY']
             config.consumer_secret     = ENV['CONSUMER_SECRET']
@@ -35,6 +36,8 @@ class App < Sinatra::Base
         else
           track = nil
         end
+        puts "DEBUG: COUNT #{count}"
+        count = count + 1
       end
     end
     
