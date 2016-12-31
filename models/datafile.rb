@@ -65,10 +65,7 @@ class Datafile
     
     search_string = "#{self.torrent_name} #{self.file_name}"
     search_string.gsub!("&", "&amp;")
-    
-    puts "SEARCH ON #{search_string}"
-    puts "TOKEN [#{tokens}]"
-    
+
     count = 0
     
     tokens.each do |token|
@@ -76,8 +73,6 @@ class Datafile
         count = count + 1
       end
     end
-
-    puts "COUNT/SIZE #{count}/#{tokens.size} [#{(count.to_f/tokens.size.to_f)}]"
 
     return (count.to_f/tokens.size.to_f)
   end

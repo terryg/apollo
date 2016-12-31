@@ -46,9 +46,22 @@ class Jobs
 
           Datafile.all(:fields => [:id, :file_name, :torrent_name], 
                        :matched.not => true).each do |datafile|
-            track = datafile.match(r) 
+            if true == datafile.match(r)
+              log "INFO: MATCHED D#{datafile.id} to R#{request.id}"
+              d = Datafile.get(datafile.id)
+              log "INFO: MATCHED #{request.tweet_text}"
+              log "INFO: MATCHED #{d.file_name}"
+              d.update(:matched => true)
+          
+              track = Track.create(:datafile_id => datafile.id,
+                                   :request_id => r.id)
+              if !track.save
+                log "WARN: Failed to save Track"
+              end
+              break
+            end
           end
-
+          
           if track.nil?
             r.search_queue = SearchQueue.create
             r.save
