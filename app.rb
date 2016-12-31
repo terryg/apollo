@@ -10,24 +10,32 @@ class App < Sinatra::Base
 
   get '/' do  
     if (@size = Track.all(:deleted => false).length) > 0
-      id = ((rand * 100).to_i % @size) + 1
-      puts "DEBUG: Get Track #{id}"
-      track = Track.get(id)
-      
-      @@client ||= Twitter::REST::Client.new do |config|
-        config.consumer_key        = ENV['CONSUMER_KEY']
-        config.consumer_secret     = ENV['CONSUMER_SECRET']
-        config.access_token        = ENV['ACCESS_TOKEN']
-        config.access_token_secret = ENV['ACCESS_TOKEN_SECRET']
-      end 
+      track = nil
+      while track.nil?       
+        id = ((rand * 100).to_i % @size) + 1
+        puts "DEBUG: Get Track #{id}"
+        track = Track.get(id)
+        puts "DEBUG: #{track.created_at}"
+        if track.created_at > (Date.today - 30)
+          @@client ||= Twitter::REST::Client.new do |config|
+            config.consumer_key        = ENV['CONSUMER_KEY']
+            config.consumer_secret     = ENV['CONSUMER_SECRET']
+            config.access_token        = ENV['ACCESS_TOKEN']
+            config.access_token_secret = ENV['ACCESS_TOKEN_SECRET']
+          end 
     
-      puts "XXXXX #{track} XXXXX"
-      @tweet = @@client.status(track.request.tweet_id)
+          puts "XXXXX #{track} XXXXX"
+
+          @tweet = @@client.status(track.request.tweet_id)
       
-      @datafile = track.datafile
+          @datafile = track.datafile
       
-      puts "DEBUG: #{@tweet}"
-      puts "DEBUG: #{@tweet.id}"
+          puts "DEBUG: #{@tweet}"
+          puts "DEBUG: #{@tweet.id}"
+        else
+          track = nil
+        end
+      end
     end
     
     haml :index
