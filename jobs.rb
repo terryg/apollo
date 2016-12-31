@@ -256,8 +256,7 @@ class Jobs
     tracks = Array.new
 
     Request.all(:fields => [:id, :tweet_text], :matched.not => true).each do |request|
-      Datafile.all(:fields => [:id, :file_name, :torrent_name], 
-                   :matched.not => true).each do |datafile|
+      Datafile.all(:fields => [:id, :file_name, :torrent_name], :matched.not => true).each do |datafile|
         if true == datafile.match(request)
           log "INFO: MATCHED D#{datafile.id} to R#{request.id}"
           d = Datafile.get(datafile.id)
@@ -272,6 +271,8 @@ class Jobs
           else
             log "WARN: Failed to save Track"
           end
+
+          break
         end
       end
     end
