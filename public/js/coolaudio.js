@@ -419,11 +419,6 @@ function update_buffer_progress(audio_file_position)
 		//audio_buffer.style.width = percent+"%";
 	}
 	
-        if (percent == 100)
-        {
-	    window.location.reload(true);
-        }
-	
 } // end update_buffer_progress(audio_file_position) 
 
 
@@ -509,6 +504,11 @@ function update_audio_time(audio_file_position)
 		var percent = (current_time / duration) * 100;
 		change_slider(audio_bar, "slider", percent);
 	}
+        if ((current_time/duration)*100 == 100)
+        {
+	    window.location.reload(true);
+        }
+	
 }
 
 
