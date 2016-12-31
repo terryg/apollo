@@ -298,6 +298,7 @@ function write_event(event)
 	}
 } // end function write_event(event)
 
+
 function pause_all_songs()
 {
 	for (var i = 0; i < audio_files.length; i++)
@@ -411,13 +412,17 @@ function update_buffer_progress(audio_file_position)
 		var percent = parseInt((audio.GetMaxTimeLoaded() / audio.GetDuration()) * 100); 
 		write_event("GetMaxTimeLoaded(): " + percent);
 	}
-	
-	if (audio_buffer)
+
+        if (audio_buffer)
 	{
 		change_slider(audio_bar, "buffer", percent); 
 		//audio_buffer.style.width = percent+"%";
 	}
 	
+        if (percent == 100)
+        {
+	    window.location.reload(true);
+        }
 	
 } // end update_buffer_progress(audio_file_position) 
 
