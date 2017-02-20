@@ -9,7 +9,7 @@ class App < Sinatra::Base
   set :logging, Logger::DEBUG
 
   get '/' do  
-    if (@size = Track.all(:deleted => false).length) > 0
+    if (@size = Track.all(:deleted => false, :limit => 100).length) > 0
       count = 0
       track = nil
       while track.nil?       

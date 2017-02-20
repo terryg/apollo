@@ -308,6 +308,8 @@ class Jobs
 
         retweets = client.retweeted_by_me(:max_id => tweet.id)
 
+        puts "RETWEET SIZE #{retweets.size}"
+        
         if retweets.size == 0
           puts "RETWEETED TWEET #{tweet.retweeted_tweet?}"
           client.retweet(tweet.id)
