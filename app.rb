@@ -8,14 +8,16 @@ class App < Sinatra::Base
   
   set :logging, Logger::DEBUG
 
-  get '/' do  
-    if (@size = Track.all(:deleted => false, :limit => 100).length) > 0
+  get '/' do
+    tracks = Track.all(:deleted => false, :limit => 100)
+    
+    if (@size = tracks.length) > 0
       count = 0
       track = nil
       while track.nil?       
         id = ((rand * 100).to_i % @size) + 1
         puts "DEBUG: Get Track #{id}"
-        track = Track.get(id)
+        track = Track.get(tracks[id].id)
         puts "DEBUG: #{track.created_at}"
         if track.created_at > (Date.today - 15)
           @@client ||= Twitter::REST::Client.new do |config|
