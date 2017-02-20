@@ -15,7 +15,7 @@ class App < Sinatra::Base
       count = 0
       track = nil
       while track.nil?       
-        id = ((rand * 100).to_i % @size) + 1
+        id = ((rand * 100).to_i % @size)
         puts "DEBUG: Get Track #{id}"
         track = Track.get(tracks[id].id)
         puts "DEBUG: #{track.created_at}"
