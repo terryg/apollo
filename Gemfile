@@ -1,4 +1,4 @@
-ruby '2.0.0'
+ruby '2.7.0'
 source 'https://rubygems.org'
 gem 'aws-s3' 
 gem 'data_mapper'
@@ -15,3 +15,6 @@ gem 'sinatra'
 gem 'thin'
 gem 'transmission_api'
 gem 'twitter'
+
+gem "puma", "~> 4.3"
+gem "shotgun", "~> 0.9.2"
