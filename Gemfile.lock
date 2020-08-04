@@ -91,8 +91,8 @@ GEM
     multi_xml (0.5.5)
     multipart-post (2.0.0)
     naught (1.1.0)
-    rack (1.6.4)
-    rack-protection (1.5.3)
+    rack (1.6.13)
+    rack-protection (1.5.5)
       rack
     rake (11.2.2)
     redis (3.2.1)
