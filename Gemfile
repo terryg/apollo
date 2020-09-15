@@ -8,13 +8,15 @@ gem 'foreman'
 gem 'haml'
 gem 'rake'
 gem 'hiredis'
-gem 'redis', '3.2.1'
+gem 'redis'
 gem 'to_regexp'
 gem 'sass'
 gem 'sinatra'
-gem 'thin'
 gem 'transmission_api'
 gem 'twitter'
 
 gem "puma", "~> 4.3"
-gem "shotgun", "~> 0.9.2"
+
+group :development do
+  gem "shotgun", "~> 0.9.2"
+end
